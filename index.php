@@ -34,9 +34,10 @@
 				0.1,
 				1000
 			);
-			camera.position.z = 5;
-			// camera.position.x = .5;
-			// camera.position.y = 1.3;
+			camera.position.z = 70;
+			camera.position.x = -20;
+			camera.position.y = 20;
+			// camera.rotation.set(0, -.7, 0);
 
 
 
@@ -56,17 +57,33 @@
 
 
 
-			let geometry = new THREE.BoxGeometry(1.0, 1.0, 1.0);
-			let material = new THREE.MeshLambertMaterial({color: 0xFFCC00});
-			let mesh = new THREE.Mesh(geometry, material);
-			mesh.position.x = 2;
-			mesh.position.y = 1;
-			scene.add(mesh);
 
 
 
-			let light = new THREE.PointLight(0xffffff, 1, 300);
-			light.position.set(10, 0, 25);
+			let tiles = [];
+			let material1 = new THREE.MeshLambertMaterial({color: 0x00FF77});
+			let material2 = new THREE.MeshLambertMaterial({color: 0x999999});
+			for (let x = 0; x < 50; x++)
+			{
+				tiles[x] = [];
+				for (let z = 0; z < 50; z++)
+				{
+					let height = Math.random() * 1 + 1;
+					let geometry = new THREE.BoxGeometry(1.0, height, 1.0);
+					let material = Math.random() > .5 ? material1 : material2;
+					let mesh = new THREE.Mesh(geometry, material);
+					mesh.position.x = x;
+					mesh.position.z = z;
+					mesh.position.y = height / 2;
+					scene.add(mesh);
+					tiles[x][z] = mesh;
+				}
+			}
+
+
+
+			let light = new THREE.PointLight(0xffffff, 1, 500);
+			light.position.set(40, 40, 8);
 			scene.add(light);
 
 
@@ -74,6 +91,9 @@
 
 			function render() {
 				renderer.render(scene, camera);
+				camera.position.x += .1;
+				camera.lookAt(25, 0, 25);
+
 				requestAnimationFrame(render);
 			}
 			render();
