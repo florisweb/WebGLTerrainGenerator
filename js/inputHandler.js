@@ -27,15 +27,16 @@ function _InputHandler(_canvas) {
 	window.onkeydown = function(_e) {
 		console.log(_e.key);
 		const moveSpeed = 20;
+		let key = _e.key.toLowerCase();
 
-		if (_e.key == 'w')
+		if (key == 'w')
 		{
 			Camera.velocity.value[2] = moveSpeed;
-		} else if (_e.key == 's')
+		} else if (key == 's')
 		{
 			Camera.velocity.value[2] = -moveSpeed;
 		}
-		if (_e.key == 'a')
+		if (key == 'a')
 		{
 			Camera.velocity.value[0] = moveSpeed;
 		} else if (_e.key == 'd')
@@ -43,28 +44,19 @@ function _InputHandler(_canvas) {
 			Camera.velocity.value[0] = -moveSpeed;
 		}
 
-		if (_e.key == ' ')
+		if (key == ' ')
 		{
 			Camera.velocity.value[1] = -moveSpeed;
-		} else if (_e.key == 'Shift')
+		} else if (key == 'shift')
 		{
 			Camera.velocity.value[1] = moveSpeed;
 		}
 	}
 	window.onkeyup = function(_e) {
-		if (_e.key == 'w' || _e.key == 's')
-		{
-			Camera.velocity.value[2] = 0;
-		}
-		if (_e.key == 'a' || _e.key == 'd')
-		{
-			Camera.velocity.value[0] = 0;
-		}
-
-		if (_e.key == ' ' || _e.key == 'Shift')
-		{
-			Camera.velocity.value[1] = 0;
-		}
+		let key = _e.key.toLowerCase();
+		if (key == 'w' || key == 's') Camera.velocity.value[2] = 0;
+		if (key == 'a' || key == 'd') Camera.velocity.value[0] = 0;
+		if (key == ' ' || key == 'shift') Camera.velocity.value[1] = 0;
 	}
 
 
