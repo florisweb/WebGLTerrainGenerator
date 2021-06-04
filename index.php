@@ -23,8 +23,8 @@
 
 		
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js'></script>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js'></script>
-
+		<!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js'></script> -->
+		<script src='js/perlin.js'></script>
 
 		<script>
 			let scene = new THREE.Scene();
@@ -58,8 +58,8 @@
 
 
 
-			let worldSize = 100;
-			let tileCount = 200;
+			let worldSize = 50;
+			let tileCount = 100;
 
 			let material1 = new THREE.MeshLambertMaterial({color: 0x00FF77});
 			let material2 = new THREE.MeshLambertMaterial({color: 0x999999});
@@ -70,7 +70,7 @@
 			{
 				for (let z = 0; z < tileCount; z++)
 				{
-					let height = Math.random() * 1 + 1;
+					let height = (1 + perlin.get((2 * x / tileCount - tileCount), (2 * z / tileCount - tileCount))) * 4 + 1; //Math.random() * 1 + 1;
 					let geometry = new THREE.BoxGeometry(worldSize / tileCount, height, worldSize / tileCount);
 					let Mesh = new THREE.Mesh(geometry);
 					Mesh.position.x = x * worldSize / tileCount;
