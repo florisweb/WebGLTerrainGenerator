@@ -1,7 +1,7 @@
 
 
 
-
+let InputHandler;
 function _World({tileCount, worldSize}) {
 	this.size = worldSize;
 	this.tileCount = tileCount;
@@ -81,6 +81,8 @@ function _World({tileCount, worldSize}) {
 		mesh3.position.z = -this.size / 2;
 		this.scene.add(mesh3);
 
+
+		InputHandler = new _InputHandler(World.renderer.domElement);
 		this.update();
 	}
 
@@ -89,6 +91,9 @@ function _World({tileCount, worldSize}) {
 	this.update = function() {
 		let dt = (new Date() - prevFrameTime) / 1000;
 		Camera.update(dt);
+
+		InputHandler.update();
+
 		this.renderer.render(this.scene, Camera.camera);
 		// camera.position.x += .1;
 		// camera.lookAt(0, 0, 0);

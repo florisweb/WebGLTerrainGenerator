@@ -5,9 +5,12 @@
 		<title>WebGLTerrainGenerator</title>
 		<style>
 			body {
+				position: fixed;
 				margin: none;
 				padding: none;
 				background: #000;
+				height: 100vh;
+				overflow: hidden;
 			}
 
 			canvas {

@@ -11,8 +11,15 @@ function _InputHandler(_canvas) {
 	let HTML = {
 		canvas: _canvas,
 	}
+	const raycaster = new THREE.Raycaster();
+	let mousePos = new THREE.Vector2();
+	mousePos.x = -2;
+	mousePos.y = -2;
+
 	this.mouseDown = false;
 	this.draging = false;
+
+
 
 	this.settings = new function() {
 		this.dragSpeed = 1;
@@ -25,8 +32,8 @@ function _InputHandler(_canvas) {
 
 
 	window.onkeydown = function(_e) {
-		console.log(_e.key);
 		const moveSpeed = 20;
+		const rotateSpeed = .5;
 		let key = _e.key.toLowerCase();
 
 		if (key == 'w')
@@ -51,34 +58,74 @@ function _InputHandler(_canvas) {
 		{
 			Camera.velocity.value[1] = moveSpeed;
 		}
+
+
+		if (key == 'q')
+		{
+			Camera.angularVelocity.value[1] = rotateSpeed;
+		} else if (key == 'e')
+		{
+			Camera.angularVelocity.value[1] = -rotateSpeed;
+		}
 	}
 	window.onkeyup = function(_e) {
 		let key = _e.key.toLowerCase();
 		if (key == 'w' || key == 's') Camera.velocity.value[2] = 0;
 		if (key == 'a' || key == 'd') Camera.velocity.value[0] = 0;
 		if (key == ' ' || key == 'shift') Camera.velocity.value[1] = 0;
+		if (key == 'q' || key == 'e') Camera.angularVelocity.value[1] = 0;
+	}
+
+
+
+	HTML.canvas.addEventListener('mousemove', function(_e) {
+		// InputHanlder.raycaster
+		mousePos.x = (_e.clientX / window.innerWidth) * 2 - 1;
+		mousePos.y = -(_e.clientY / window.innerHeight) * 2 + 1;
+
+	});
+
+	let resetColorValue = false;
+	let prevObject = false;
+	this.update = function() {
+		// raycaster.setFromCamera(mousePos, Camera.camera);
+		// const intersects = raycaster.intersectObjects(World.scene.children);
+		// window.intersects = intersects;
+		// if (prevObject)
+		// {
+		// 	prevObject.material.color.set(resetColorValue);
+		// }
+
+		// if (intersects.length < 1) return;
+		// let c = intersects[0].object.material.color;
+		// resetColorValue = 'rgb(' + c.r * 255 + ', ' + c.g * 255 + ', ' + c.b * 255 + ')';
+		// prevObject = intersects[0].object;
+		// intersects[0].object.material.color.set('rgb(255, 0, 0)');
 	}
 
 
 
 
-	// HTML.canvas.addEventListener('wheel', function(event) {
-	// 	let mousePosition = new Vector([
-	// 		event.offsetX / HTML.canvas.offsetWidth * HTML.canvas.width, 
-	// 		event.offsetY / HTML.canvas.offsetHeight * HTML.canvas.height
-	// 	]);
 
-	// 	// let startWorldPosition = RenderEngine.camera.canvasPosToWorldPos(mousePosition);
 
-	//     // RenderEngine.camera.zoom += event.deltaY * InputHandler.settings.scrollSpeed;
-	//     // if (RenderEngine.camera.zoom < .1) RenderEngine.camera.zoom = .1;
+
+	HTML.canvas.addEventListener('wheel', function(event) {
+		// let mousePosition = new Vector([
+		// 	event.offsetX / HTML.canvas.offsetWidth * HTML.canvas.width, 
+		// 	event.offsetY / HTML.canvas.offsetHeight * HTML.canvas.height
+		// ]);
+
+		// let startWorldPosition = RenderEngine.camera.canvasPosToWorldPos(mousePosition);
+
+	    Camera.zoom += event.deltaY * InputHandler.settings.scrollSpeed;
+	    if (Camera.zoom < .1) Camera.zoom = .1;
 	    
 
-	//     let endWorldPosition = RenderEngine.camera.canvasPosToWorldPos(mousePosition);
-	//     RenderEngine.camera.position.add(endWorldPosition.difference(startWorldPosition));
+	    // let endWorldPosition = RenderEngine.camera.canvasPosToWorldPos(mousePosition);
+	    // RenderEngine.camera.position.add(endWorldPosition.difference(startWorldPosition));
 	    
-	//     return false; 
-	// }, false);
+	    return false; 
+	}, false);
 
 
 

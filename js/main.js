@@ -13,7 +13,7 @@ let Perlin3 = new _perlin(10);
 
 
 const Camera = new _Camera();
-const World = new _World({worldSize: 100, tileCount: 300});
+const World = new _World({worldSize: 100, tileCount: 50});
 
 
 
@@ -25,7 +25,7 @@ World.scene.add(light);
 
 
 World.setup();
-const InputHandler = new _InputHandler(World.renderer.domElement);
+
 
 
 
