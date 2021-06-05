@@ -87,10 +87,18 @@ function _InputHandler(_canvas) {
 
 	let resetColorValue = false;
 	let prevObject = false;
+
+	const blockSize = World.size / World.tileCount;
 	this.update = function() {
 		// raycaster.setFromCamera(mousePos, Camera.camera);
-		// const intersects = raycaster.intersectObjects(World.scene.children);
+		// const intersects = raycaster.intersectObjects(World.worldMeshes);
+		
 		// window.intersects = intersects;
+		// if (intersects.length < 1) return;
+		// World.buildMesh.position.x = Math.round((intersects[0].point.x - Camera.position.value[0]) / blockSize) * blockSize;
+		// World.buildMesh.position.y = Math.round((intersects[0].point.y - Camera.position.value[1]) / blockSize) * blockSize;
+		// World.buildMesh.position.z = Math.round((intersects[0].point.z - Camera.position.value[2]) / blockSize) * blockSize;
+
 		// if (prevObject)
 		// {
 		// 	prevObject.material.color.set(resetColorValue);

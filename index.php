@@ -31,6 +31,7 @@
 		<script src='js/vector.js'></script>
 
 		<script src='js/inputHandler.js'></script>
+		<script src='js/worldGenerator.js'></script>
 		<script src='js/world.js'></script>
 		<script src='js/camera.js'></script>
 		<script src='js/main.js'></script>
