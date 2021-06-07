@@ -1,9 +1,11 @@
 
 
 
+// optimized = 39112;
+// unoptimized = 77350
 
 const Camera = new _Camera();
-const World = new _World({worldSize: 100, tileCount: 32});
+const World = new _World({worldSize: 100, tileCount: 128});
 
 
 

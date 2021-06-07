@@ -24,10 +24,12 @@ function _World({tileCount, worldSize}) {
 		});
 
 
-
+		let worldShape = this.generator.createWorldShape({tileCount: this.tileCount, worldSize: this.size});
+		window.world = worldShape;
 		this.generator.createWorld({
 			worldSize: this.size,
-			tileCount: this.tileCount
+			tileCount: this.tileCount,
+			worldShape: worldShape
 		});
 
 
