@@ -15,7 +15,7 @@ function _WorldGenerator() {
 	this.createWorldShape = function({tileCount, worldSize}) {
 		let world = [];
 		const blockSize = worldSize / tileCount;
-		const waterHeight = blockSize * 2;
+		const waterHeight = blockSize * 1;
 		for (let x = 0; x < tileCount; x++)
 		{
 			world[x] = [];
@@ -25,13 +25,13 @@ function _WorldGenerator() {
 				height = Math.ceil(height / blockSize) * blockSize;
 				if (height < waterHeight) height = waterHeight;
 				let type = 0;
-				if (height <= waterHeight) 
-				{
-					type = 2;
-				} else if (height * (1.05 - .1 * Math.random()) > 40)
-				{
-					type = 1;
-				}  
+				// if (height <= waterHeight) 
+				// {
+				// 	type = 2;
+				// } else if (height * (1.05 - .1 * Math.random()) > 40)
+				// {
+				// 	type = 1;
+				// }  
 
 				world[x][z] = {
 					y: height,
@@ -152,7 +152,12 @@ function _WorldGenerator() {
 
 
 
-		let material1 = new THREE.MeshLambertMaterial({
+		let materialSide = new THREE.MeshLambertMaterial({
+			color: 0xffffff, 
+			side: THREE.DoubleSide,
+			map: new THREE.TextureLoader().load('images/mc.png'),
+		});	
+		let materialTop = new THREE.MeshLambertMaterial({
 			color: 0xffffff, 
 			side: THREE.DoubleSide,
 			map: new THREE.TextureLoader().load('images/crate.png'),
@@ -162,11 +167,20 @@ function _WorldGenerator() {
 		let material3 = new THREE.MeshLambertMaterial({color: 0x0000ff, side: THREE.DoubleSide});
 
 		
+		let materials = [materialSide, materialTop, materialSide, materialSide, materialTop, materialTop];
 		
-		let mesh1 = new THREE.Mesh(geometry1, material1);
+		let mesh1 = new THREE.Mesh(geometry1, materials);
+		for (let i = 0; i < mesh1.geometry.faces.length; i++)
+		{
+			mesh1.geometry.faces[i].materialIndex = Math.round(Math.random());
+		}
+
+		mesh1.geometry.groupsNeedUpdate = true
+
 		mesh1.position.x = -worldSize / 2;
 		mesh1.position.z = -worldSize / 2;
 		World.scene.add(mesh1);
+		window.mesh1 = mesh1;
 
 		let mesh2 = new THREE.Mesh(geometry2, material2);
 		mesh2.position.x = -worldSize / 2;
