@@ -5,7 +5,7 @@
 // unoptimized = 77350
 
 const Camera = new _Camera();
-const World = new _World({worldSize: 100, tileCount: 128});
+const World = new _World({worldSize: 100, tileCount: 64});
 
 
 
