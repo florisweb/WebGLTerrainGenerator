@@ -43,9 +43,6 @@ function _WorldGenerator() {
 	}
 
 	this.createWorld = function({tileCount, worldSize, worldShape}) {
-		let material1 = new THREE.MeshLambertMaterial({color: 0x00FF77, side: THREE.DoubleSide});
-		let material2 = new THREE.MeshLambertMaterial({color: 0x999999, side: THREE.DoubleSide});
-		let material3 = new THREE.MeshLambertMaterial({color: 0x0000ff, side: THREE.DoubleSide});
 		let geometry1 = new THREE.Geometry();
 		let geometry2 = new THREE.Geometry();
 		let geometry3 = new THREE.Geometry();
@@ -152,6 +149,20 @@ function _WorldGenerator() {
 		geometry2.mergeVertices();
 		geometry3.mergeVertices();
 
+
+
+
+		let material1 = new THREE.MeshLambertMaterial({
+			color: 0xffffff, 
+			side: THREE.DoubleSide,
+			map: new THREE.TextureLoader().load('images/crate.png'),
+		});	
+
+		let material2 = new THREE.MeshLambertMaterial({color: 0x777777, side: THREE.DoubleSide});
+		let material3 = new THREE.MeshLambertMaterial({color: 0x0000ff, side: THREE.DoubleSide});
+
+		
+		
 		let mesh1 = new THREE.Mesh(geometry1, material1);
 		mesh1.position.x = -worldSize / 2;
 		mesh1.position.z = -worldSize / 2;

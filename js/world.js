@@ -13,7 +13,10 @@ function _World({tileCount, worldSize}) {
 
 	this.generator = new _WorldGenerator();
 
-	this.setup = function() {
+	this.setup = async function() {
+		// window.imageDataURL = await getImageDataURL('images/1.png');
+
+
 		this.renderer.setClearColor('#e5e5e5');
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 
