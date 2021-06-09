@@ -43,12 +43,42 @@ function _WorldGenerator() {
 	}
 
 	this.createWorld = function({tileCount, worldSize, worldShape}) {
+
+		let materialSide = new THREE.MeshLambertMaterial({
+			color: 0xffffff, 
+			side: THREE.DoubleSide,
+			map: new THREE.TextureLoader().load('images/mc.png'),
+		});	
+		let materialTop = new THREE.MeshLambertMaterial({
+			color: 0xffffff, 
+			side: THREE.DoubleSide,
+			map: new THREE.TextureLoader().load('images/crate.png'),
+		});	
+
+		let material2 = new THREE.MeshLambertMaterial({color: 0x777777, side: THREE.DoubleSide});
+		let material3 = new THREE.MeshLambertMaterial({color: 0x00ffff, side: THREE.DoubleSide});
+
+		
+		// let materials = [materialTop, materialSide, materialSide, materialSide, materialSide, materialTop];
+		let materials = [
+
+			materialTop,
+			materialSide,
+			// material2,
+			// material3,
+			new THREE.MeshLambertMaterial({color: 0xff0000, side: THREE.DoubleSide}),
+			new THREE.MeshLambertMaterial({color: 0x00ff00, side: THREE.DoubleSide}),
+			new THREE.MeshLambertMaterial({color: 0x0000ff, side: THREE.DoubleSide}),
+		]
+
+
+
+
 		let geometry1 = new THREE.Geometry();
 		let geometry2 = new THREE.Geometry();
 		let geometry3 = new THREE.Geometry();
 
 		const blockSize = worldSize / tileCount;
-
 		for (let x = 0; x < tileCount; x++)
 		{
 			for (let z = 0; z < tileCount; z++)
@@ -60,6 +90,7 @@ function _WorldGenerator() {
 				let subMeshTop = new THREE.Mesh(geometryTop);
 				subMeshTop.rotation.x = .5 * Math.PI;
 				mergedGeometry.mergeMesh(subMeshTop);
+				for (let i = 0; i < 2; i++) mergedGeometry.faces[i].materialIndex = 1;
 
 
 				if (z + 1 != tileCount)
@@ -73,8 +104,15 @@ function _WorldGenerator() {
 						subMeshFront.position.z = .5 * blockSize;
 						subMeshFront.position.y = -.5 * dy;
 						mergedGeometry.mergeMesh(subMeshFront);
+						
+						for (let i = 0; i < mergedGeometry.faces.length; i++)
+						{
+							if (mergedGeometry.faces[i].materialIndex !== 0) continue;
+							mergedGeometry.faces[i].materialIndex = 2 + 1;
+						}
 					}
 				}
+
 
 				if (z - 1 >= 0)
 				{
@@ -86,9 +124,16 @@ function _WorldGenerator() {
 						let subMeshBack = new THREE.Mesh(geometryBack);
 						subMeshBack.position.z = -.5 * blockSize;
 						subMeshBack.position.y = -.5 * dy;
-						mergedGeometry.mergeMesh(subMeshBack);
+						mergedGeometry.mergeMesh(subMeshBack);	
+						for (let i = 0; i < mergedGeometry.faces.length; i++)
+
+						{
+							if (mergedGeometry.faces[i].materialIndex !== 0) continue;
+							mergedGeometry.faces[i].materialIndex = 4 + 1;
+						}
 					}
 				}
+
 
 				if (x + 1 != tileCount)
 				{
@@ -102,8 +147,15 @@ function _WorldGenerator() {
 						subMeshRight.position.x = .5 * blockSize;
 						subMeshRight.position.y = -.5 * dy;
 						mergedGeometry.mergeMesh(subMeshRight);
+
+						for (let i = 0; i < mergedGeometry.faces.length; i++)
+						{
+							if (mergedGeometry.faces[i].materialIndex !== 0) continue;
+							mergedGeometry.faces[i].materialIndex = 1 + 1;
+						}
 					}
 				}
+
 
 				if (x - 1 >= 0)
 				{
@@ -117,6 +169,12 @@ function _WorldGenerator() {
 						subMeshLeft.position.x = -.5 * blockSize;
 						subMeshLeft.position.y = -.5 * dy;
 						mergedGeometry.mergeMesh(subMeshLeft);
+
+						for (let i = 0; i < mergedGeometry.faces.length; i++)
+						{
+							if (mergedGeometry.faces[i].materialIndex !== 0) continue;
+							mergedGeometry.faces[i].materialIndex = 3 + 1;
+						}
 					}
 				}
 
@@ -132,16 +190,63 @@ function _WorldGenerator() {
 				Mesh.position.z = z * blockSize;
 				Mesh.position.y = self.y;
 
+
+				let geometry = geometry1;
 				if (self.type == 2) 
 				{
-					geometry3.mergeMesh(Mesh);
-					continue;
-				} else if (self.type == 1)
-				{
-					geometry2.mergeMesh(Mesh);
-					continue;
-				}  
-				geometry1.mergeMesh(Mesh);
+					geometry = geometry3;
+				} else if (self.type == 1) geometry = geometry2;
+
+				let prevFaceCount = geometry.faces.length;
+				geometry.mergeMesh(Mesh);
+				
+				let newFaces = geometry.faces.length - prevFaceCount;
+
+				// 0, 1: top
+				//
+				// for (let i = 0; i < newFaces; i++)
+				// {
+				// 	let index = i + prevFaceCount;
+				// 	// let materialIndex = 0;
+				// 	geometry.faces[index].materialIndex
+
+				// 	// if (i >= 2 && i < 4)
+				// 	// {						
+				// 	// 	if (addedFrontFace) {
+				// 	// 		materialIndex = 2;
+				// 	// 		addedFrontFace = false;
+				// 	// 	} else if (addedBackFace) {
+				// 	// 		materialIndex = 4;
+				// 	// 		addedBackFace = false;
+				// 	// 	} else if (addedRightFace) {
+				// 	// 		materialIndex = 1;
+				// 	// 		addedRightFace = false;
+				// 	// 	} else if (addedLeftFace) {
+				// 	// 		materialIndex = 3;
+				// 	// 		addedLeftFace = false;
+				// 	// 	}
+				// 	// } 
+				// 	// else if (i >= 4 && i < 6)
+				// 	// {
+				// 	// 	if (addedFrontFace) {
+				// 	// 		materialIndex = 2;
+				// 	// 		addedFrontFace = false;
+				// 	// 	} else if (addedBackFace) {
+				// 	// 		materialIndex = 4;
+				// 	// 		addedBackFace = false;
+				// 	// 	} else if (addedRightFace) {
+				// 	// 		materialIndex = 1;
+				// 	// 		addedRightFace = false;
+				// 	// 	} else if (addedLeftFace) {
+				// 	// 		materialIndex = 3;
+				// 	// 		addedLeftFace = false;
+				// 	// 	}
+				// 	// }
+
+				// 	// geometry.faces[index].materialIndex = materialIndex;
+				// 	// geometry.faces[index + 1].materialIndex = materialIndex;
+				// }
+				// console.log(geometry1.faces.length, prevFaceCount, newFaces);
 			}
 		}
 
@@ -149,31 +254,12 @@ function _WorldGenerator() {
 		geometry2.mergeVertices();
 		geometry3.mergeVertices();
 
-
-
-
-		let materialSide = new THREE.MeshLambertMaterial({
-			color: 0xffffff, 
-			side: THREE.DoubleSide,
-			map: new THREE.TextureLoader().load('images/mc.png'),
-		});	
-		let materialTop = new THREE.MeshLambertMaterial({
-			color: 0xffffff, 
-			side: THREE.DoubleSide,
-			map: new THREE.TextureLoader().load('images/crate.png'),
-		});	
-
-		let material2 = new THREE.MeshLambertMaterial({color: 0x777777, side: THREE.DoubleSide});
-		let material3 = new THREE.MeshLambertMaterial({color: 0x0000ff, side: THREE.DoubleSide});
-
-		
-		let materials = [materialSide, materialTop, materialSide, materialSide, materialTop, materialTop];
-		
+		for (let i = 0; i < geometry1.faces.length; i++) geometry1.faces[i].materialIndex--;// = geometry1.faces[i].materialIndex - 1;//--;
 		let mesh1 = new THREE.Mesh(geometry1, materials);
-		for (let i = 0; i < mesh1.geometry.faces.length; i++)
-		{
-			mesh1.geometry.faces[i].materialIndex = Math.round(Math.random());
-		}
+		// for (let i = 0; i < mesh1.geometry.faces.length; i++)
+		// {
+		// 	mesh1.geometry.faces[i].materialIndex = Math.round(Math.random());
+		// }
 
 		mesh1.geometry.groupsNeedUpdate = true
 
