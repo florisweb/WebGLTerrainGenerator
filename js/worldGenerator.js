@@ -17,7 +17,7 @@ function _WorldGenerator() {
 	this.createWorldShape = function({tileCount, worldSize}) {
 		let world = [];
 		const blockSize = worldSize / tileCount;
-		const waterHeight = blockSize * 1;
+		const waterHeight = blockSize * 30;
 		for (let x = 0; x < tileCount; x++)
 		{
 			world[x] = [];
@@ -29,7 +29,7 @@ function _WorldGenerator() {
 				let type = 0;
 				if (height <= waterHeight) 
 				{
-					type = 1;
+					type = 2;
 				} else if (height * (1.05 - .1 * Math.random()) > 40)
 				{
 					type = 1;
@@ -70,8 +70,20 @@ function _WorldGenerator() {
 				side: THREE.DoubleSide,
 				map: new THREE.TextureLoader().load('images/blocks/1/side.png'),
 			})
+		},
+		{
+			top: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/2/top.png'),
+			}),
+			side: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/2/side.png'),
+			})
 		}
-	]
+	];
 		
 
 
