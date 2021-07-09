@@ -5,14 +5,17 @@
 // unoptimized = 77350
 
 const Camera = new _Camera();
-const World = new _World({worldSize: 100, tileCount: 64});
+const World = new _World({worldSize: 100, tileCount: 128});
 
 
 
 
-let light = new THREE.PointLight(0xffffff, 2, 700);
+let light = new THREE.PointLight(0xffffff, 1, 700);
 light.position.set(20, 80, 0);
 World.scene.add(light);
+
+let ambientLight = new THREE.AmbientLight(0xffffff, .8);
+World.scene.add(ambientLight);
 
 
 

@@ -27,13 +27,13 @@ function _WorldGenerator() {
 				height = Math.ceil(height / blockSize) * blockSize;
 				if (height < waterHeight) height = waterHeight;
 				let type = 0;
-				// if (height <= waterHeight) 
-				// {
-				// 	type = 2;
-				// } else if (height * (1.05 - .1 * Math.random()) > 40)
-				// {
-				// 	type = 1;
-				// }  
+				if (height <= waterHeight) 
+				{
+					type = 1;
+				} else if (height * (1.05 - .1 * Math.random()) > 40)
+				{
+					type = 1;
+				}  
 
 				world[x][z] = {
 					y: height,
@@ -45,102 +45,104 @@ function _WorldGenerator() {
 	}
 
 
-
-
-
-	let materialSide = new THREE.MeshLambertMaterial({
-		color: 0xffffff, 
-		side: THREE.DoubleSide,
-		map: new THREE.TextureLoader().load('images/mc.png'),
-	});	
-	let materialTop = new THREE.MeshLambertMaterial({
-		color: 0xffffff, 
-		side: THREE.DoubleSide,
-		map: new THREE.TextureLoader().load('images/crate.png'),
-	});	
-
-	let material2 = new THREE.MeshLambertMaterial({color: 0x777777, side: THREE.DoubleSide});
-	let material3 = new THREE.MeshLambertMaterial({color: 0x00ffff, side: THREE.DoubleSide});
-
 	
 	let materials = [
-		materialTop,
-		materialSide,
-		materialSide,
-		materialSide,
-		materialSide,
-	];
-
-
-
+		{
+			top: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/0/top.png'),
+			}),
+			side: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/0/side.png'),
+			})
+		},
+		{
+			top: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/1/top.png'),
+			}),
+			side: new THREE.MeshLambertMaterial({
+				color: 0xffffff, 
+				side: THREE.DoubleSide,
+				map: new THREE.TextureLoader().load('images/blocks/1/side.png'),
+			})
+		}
+	]
+		
 
 
 
 	this.createChunkMeshes = function({chunkX, chunkZ, tileCount, worldSize, worldShape}) {
 		const blockSize = worldSize / tileCount;
 
-		let geometry1 = new THREE.Geometry();
-		let geometry2 = new THREE.Geometry();
-		let geometry3 = new THREE.Geometry();
+		let blockGeometries = [];
+		for (let material of materials)
+		{
+			blockGeometries.push({
+				topGeometry: new THREE.Geometry(),
+				sideGeometry: new THREE.Geometry(),
+				altered: false
+			})
+		}
+
 		for (let dx = 0; dx < chunkSize; dx++)
 		{
 			let x = dx + chunkX * chunkSize;
 			for (let dz = 0; dz < chunkSize; dz++)
 			{
 				let z = dz + chunkZ * chunkSize;
+				let type = worldShape[x][z].type;
 
-				let Mesh = createBlockMesh({
+				let Meshes = createBlockMesh({
 					x: x,
 					z: z,
 					worldShape: worldShape,
-					blockSize: blockSize
-				})
-				let geometry = geometry1;
-				// if (worldShape[x][z].type == 2) 
-				// {
-				// 	geometry = geometry3;
-				// } else if (worldShape[x][z].type == 1) geometry = geometry2;
+					blockSize: blockSize,
+				});
 
-				geometry.mergeMesh(Mesh);
+				blockGeometries[type].topGeometry.mergeMesh(Meshes.top);
+				blockGeometries[type].sideGeometry.mergeMesh(Meshes.side);
+				blockGeometries[type].altered = true;
 			}
 		}
 
-		geometry1.mergeVertices();
-		geometry2.mergeVertices();
-		geometry3.mergeVertices();
+		for (let i = 0; i < blockGeometries.length; i++)
+		{
+			let curBlockType = blockGeometries[i];
+			if (!curBlockType.altered) continue;
 
-		for (let i = 0; i < geometry1.faces.length; i++) geometry1.faces[i].materialIndex--;
-		let mesh1 = new THREE.Mesh(geometry1, materials);
+			curBlockType.topGeometry.mergeVertices();
+			curBlockType.sideGeometry.mergeVertices();
 
-		mesh1.geometry.groupsNeedUpdate = true
+			let topMesh = new THREE.Mesh(curBlockType.topGeometry, materials[i].top);
+			let sideMesh = new THREE.Mesh(curBlockType.sideGeometry, materials[i].side);
 
+			topMesh.geometry.groupsNeedUpdate = true
+			sideMesh.geometry.groupsNeedUpdate = true
 
-		mesh1.position.x = -worldSize / 2 + chunkX;
-		mesh1.position.z = -worldSize / 2 + chunkZ;
-		World.scene.add(mesh1);
-		window.mesh1 = mesh1;
+			topMesh.position.x = -worldSize / 2;
+			topMesh.position.z = -worldSize / 2;
+			World.scene.add(topMesh);
 
-		// let mesh2 = new THREE.Mesh(geometry2, material2);
-		// mesh2.position.x = -worldSize / 2;
-		// mesh2.position.z = -worldSize / 2;
-		// World.scene.add(mesh2);
-
-		// let mesh3 = new THREE.Mesh(geometry3, material3);
-		// mesh3.position.x = -worldSize / 2;l
-		// mesh3.position.z = -worldSize / 2 + chunkZ * chunkSize * blockSize;
-		// World.scene.add(mesh3);
+			sideMesh.position.x = -worldSize / 2;
+			sideMesh.position.z = -worldSize / 2;
+			World.scene.add(sideMesh);
+		}	
 	}
 
 
 	function createBlockMesh({x, z, worldShape, blockSize}) {
 		let self = worldShape[x][z];				
-		let mergedGeometry = new THREE.Geometry();
+		let sideGeometry = new THREE.Geometry();
+		
+		// Top
 		let geometryTop = new THREE.PlaneGeometry(blockSize, blockSize);
-
-		let subMeshTop = new THREE.Mesh(geometryTop);
-		subMeshTop.rotation.x = .5 * Math.PI;
-		mergedGeometry.mergeMesh(subMeshTop);
-		for (let i = 0; i < 2; i++) mergedGeometry.faces[i].materialIndex = 1;
+		let topMesh = new THREE.Mesh(geometryTop);
+		topMesh.rotation.x = .5 * Math.PI;
 
 
 		if (z + 1 != worldShape[0].length)
@@ -153,13 +155,7 @@ function _WorldGenerator() {
 				let subMeshFront = new THREE.Mesh(geometryFront);
 				subMeshFront.position.z = .5 * blockSize;
 				subMeshFront.position.y = -.5 * dy;
-				mergedGeometry.mergeMesh(subMeshFront);
-				
-				for (let i = 0; i < mergedGeometry.faces.length; i++)
-				{
-					if (mergedGeometry.faces[i].materialIndex !== 0) continue;
-					mergedGeometry.faces[i].materialIndex = 2 + 1;
-				}
+				sideGeometry.mergeMesh(subMeshFront);
 			}
 		}
 
@@ -174,13 +170,7 @@ function _WorldGenerator() {
 				let subMeshBack = new THREE.Mesh(geometryBack);
 				subMeshBack.position.z = -.5 * blockSize;
 				subMeshBack.position.y = -.5 * dy;
-				mergedGeometry.mergeMesh(subMeshBack);	
-				for (let i = 0; i < mergedGeometry.faces.length; i++)
-
-				{
-					if (mergedGeometry.faces[i].materialIndex !== 0) continue;
-					mergedGeometry.faces[i].materialIndex = 4 + 1;
-				}
+				sideGeometry.mergeMesh(subMeshBack);	
 			}
 		}
 
@@ -196,13 +186,7 @@ function _WorldGenerator() {
 				subMeshRight.rotation.y = .5 * Math.PI;
 				subMeshRight.position.x = .5 * blockSize;
 				subMeshRight.position.y = -.5 * dy;
-				mergedGeometry.mergeMesh(subMeshRight);
-
-				for (let i = 0; i < mergedGeometry.faces.length; i++)
-				{
-					if (mergedGeometry.faces[i].materialIndex !== 0) continue;
-					mergedGeometry.faces[i].materialIndex = 1 + 1;
-				}
+				sideGeometry.mergeMesh(subMeshRight);
 			}
 		}
 
@@ -218,24 +202,25 @@ function _WorldGenerator() {
 				subMeshLeft.rotation.y = .5 * Math.PI;
 				subMeshLeft.position.x = -.5 * blockSize;
 				subMeshLeft.position.y = -.5 * dy;
-				mergedGeometry.mergeMesh(subMeshLeft);
-
-				for (let i = 0; i < mergedGeometry.faces.length; i++)
-				{
-					if (mergedGeometry.faces[i].materialIndex !== 0) continue;
-					mergedGeometry.faces[i].materialIndex = 3 + 1;
-				}
+				sideGeometry.mergeMesh(subMeshLeft);
 			}
 		}
 
-		mergedGeometry.mergeVertices();
+		sideGeometry.mergeVertices();
 
-		let Mesh = new THREE.Mesh(mergedGeometry);
-		Mesh.position.x = x * blockSize;
-		Mesh.position.z = z * blockSize;
-		Mesh.position.y = self.y;
+		let sideMesh = new THREE.Mesh(sideGeometry);
+		sideMesh.position.x = x * blockSize;
+		sideMesh.position.z = z * blockSize;
+		sideMesh.position.y = self.y;
 
-		return Mesh;
+		topMesh.position.x = x * blockSize;
+		topMesh.position.z = z * blockSize;
+		topMesh.position.y = self.y;
+
+		return {
+			top: topMesh,
+			side: sideMesh,
+		}
 	}
 
 
@@ -243,75 +228,20 @@ function _WorldGenerator() {
 
 
 	this.createWorld = function({tileCount, worldSize, worldShape}) {
-
-		// for (let x = 0; x < tileCount / chunkSize; x++)
-		// {
-		// 	for (let z = 0; z < tileCount / chunkSize; z++)
-		// 	{
-		// 		this.createChunkMeshes({
-		// 			chunkX: x,
-		// 			chunkZ: z,
-		// 			tileCount: tileCount,
-		// 			worldSize: worldSize,
-		// 			worldShape: worldShape
-		// 		});
-				
-		// 	}	
-		// }
-
-
-		// return;
-
-
-		let geometry1 = new THREE.Geometry();
-		// let geometry2 = new THREE.Geometry();
-		// let geometry3 = new THREE.Geometry();
-
-		const blockSize = worldSize / tileCount;
-		for (let x = 0; x < tileCount; x++)
+		for (let x = 0; x < tileCount / chunkSize; x++)
 		{
-			for (let z = 0; z < tileCount; z++)
+			for (let z = 0; z < tileCount / chunkSize; z++)
 			{
-				let Mesh = createBlockMesh({
-					x: x,
-					z: z,
-					worldShape: worldShape,
-					blockSize: blockSize
-				})
-				let geometry = geometry1;
-				// if (worldShape[x][z].type == 2) 
-				// {
-				// 	geometry = geometry3;
-				// } else if (worldShape[x][z].type == 1) geometry = geometry2;
-
-				geometry.mergeMesh(Mesh);
-			}
+				this.createChunkMeshes({
+					chunkX: x,
+					chunkZ: z,
+					tileCount: tileCount,
+					worldSize: worldSize,
+					worldShape: worldShape
+				});
+				
+			}	
 		}
-
-		geometry1.mergeVertices();
-		// geometry2.mergeVertices();
-		// geometry3.mergeVertices();
-
-		for (let i = 0; i < geometry1.faces.length; i++) geometry1.faces[i].materialIndex--;
-		let mesh1 = new THREE.Mesh(geometry1, materials);
-
-		mesh1.geometry.groupsNeedUpdate = true
-
-		mesh1.position.x = -worldSize / 2;
-		mesh1.position.z = -worldSize / 2;
-		World.scene.add(mesh1);
-		window.mesh1 = mesh1;
-
-		// let mesh2 = new THREE.Mesh(geometry2, material2);
-		// mesh2.position.x = -worldSize / 2;
-		// mesh2.position.z = -worldSize / 2;
-		// World.scene.add(mesh2);
-
-		// let mesh3 = new THREE.Mesh(geometry3, material3);
-		// mesh3.position.x = -worldSize / 2;
-		// mesh3.position.z = -worldSize / 2;
-		// World.scene.add(mesh3);
-
 	}
 
 }
