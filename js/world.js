@@ -13,10 +13,9 @@ function _World({tileCount, worldSize}) {
 
 	this.generator = new _WorldGenerator();
 
+	this.meshes = [];
+
 	this.setup = async function() {
-		// window.imageDataURL = await getImageDataURL('images/1.png');
-
-
 		this.renderer.setClearColor('#e5e5e5');
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -36,16 +35,18 @@ function _World({tileCount, worldSize}) {
 		});
 
 
+		const blockSize = this.size / this.tileCount;
+		let cursorGeometry = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
 
-		// let cursorGeometry = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
+		let material = new THREE.MeshLambertMaterial({color: 0xff0000});
+		let BuildMesh = new THREE.Mesh(cursorGeometry, material);
 
-		// let BuildMesh = new THREE.Mesh(cursorGeometry, material4);
-		// BuildMesh.position.x = 0 * blockSize;
-		// BuildMesh.position.z = 0 * blockSize;
-		// BuildMesh.position.y = blockSize * 20;
-		// this.buildMesh = BuildMesh;
+		BuildMesh.position.x = 0 * blockSize;
+		BuildMesh.position.z = 0 * blockSize;
+		BuildMesh.position.y = blockSize * 20;
+		this.buildMesh = BuildMesh;
 
-		// this.scene.add(BuildMesh);
+		this.scene.add(BuildMesh);
 
 
 		InputHandler = new _InputHandler(World.renderer.domElement);
@@ -58,7 +59,7 @@ function _World({tileCount, worldSize}) {
 	this.update = function() {
 		// InputHandler.update();
 
-		setTimeout(function () {World.update()}, 100);
+		// setTimeout(function () {World.update()}, 100);
 	}
 
 	let prevFrameTime = new Date();

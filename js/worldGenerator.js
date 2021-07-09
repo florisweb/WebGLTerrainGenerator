@@ -143,6 +143,10 @@ function _WorldGenerator() {
 			sideMesh.position.x = -worldSize / 2;
 			sideMesh.position.z = -worldSize / 2;
 			World.scene.add(sideMesh);
+
+			
+			World.meshes.push(topMesh);
+			World.meshes.push(sideMesh);
 		}	
 	}
 

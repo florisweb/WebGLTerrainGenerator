@@ -32,7 +32,7 @@ function _InputHandler(_canvas) {
 
 
 	window.onkeydown = function(_e) {
-		const moveSpeed = 20;
+		const moveSpeed = -20;
 		const rotateSpeed = .5;
 		let key = _e.key.toLowerCase();
 
@@ -86,29 +86,19 @@ function _InputHandler(_canvas) {
 	});
 
 	let resetColorValue = false;
-	let prevObject = false;
 
 	const blockSize = World.size / World.tileCount;
 	this.update = function() {
-		// raycaster.setFromCamera(mousePos, Camera.camera);
-		// const intersects = raycaster.intersectObjects(World.worldMeshes);
+		raycaster.setFromCamera(mousePos, Camera.camera);
+		const intersects = raycaster.intersectObjects(World.meshes);
 		
-		// window.intersects = intersects;
-		// if (intersects.length < 1) return;
-		// World.buildMesh.position.x = Math.round((intersects[0].point.x - Camera.position.value[0]) / blockSize) * blockSize;
-		// World.buildMesh.position.y = Math.round((intersects[0].point.y - Camera.position.value[1]) / blockSize) * blockSize;
-		// World.buildMesh.position.z = Math.round((intersects[0].point.z - Camera.position.value[2]) / blockSize) * blockSize;
+		window.intersects = intersects;
+		if (intersects.length < 1) return;
+		World.buildMesh.position.x = Math.round(intersects[0].point.x / blockSize) * blockSize;
+		World.buildMesh.position.y = (Math.round(intersects[0].point.y / blockSize) + .5) * blockSize;
+		World.buildMesh.position.z = Math.round(intersects[0].point.z / blockSize) * blockSize;
 
-		// if (prevObject)
-		// {
-		// 	prevObject.material.color.set(resetColorValue);
-		// }
-
-		// if (intersects.length < 1) return;
-		// let c = intersects[0].object.material.color;
-		// resetColorValue = 'rgb(' + c.r * 255 + ', ' + c.g * 255 + ', ' + c.b * 255 + ')';
-		// prevObject = intersects[0].object;
-		// intersects[0].object.material.color.set('rgb(255, 0, 0)');
+		
 	}
 
 
@@ -135,6 +125,9 @@ function _InputHandler(_canvas) {
 	    return false; 
 	}, false);
 
+	HTML.canvas.addEventListener('click', function() {
+		InputHandler.update();
+	});
 
 
 
